@@ -22,8 +22,12 @@ pipeline{
         }
 
          stage ('Deploy Kubernetes'){
+            envirionment {
+                tag_version = "${env.BUILD_ID}"
+            }
             steps{
                 withKubeConfig([credentialId: 'Kubeconfig']){
+                sh 'sed -i "s/{{TAG}}/$tag_version/g" ./k8s/deployment.yaml'
                 sh 'Kubectl apply -f ./k8s/deployment.yaml'
                 }
             }
